@@ -17,6 +17,7 @@ import argparse
 import configparser
 import statistics
 import threading
+import socket
 from SimpleWebSocketServer import SimpleWebSocketServer, WebSocket
 
 
@@ -60,6 +61,8 @@ def parse_args():
     parser.add_argument("-H", metavar='HR_HANDLE', type=str, help="Gatttool handle used for HR notifications (default: none)")
     parser.add_argument("-v", action='store_true', help="Verbose output")
     parser.add_argument("-d", action='store_true', help="Enable debug of gatttool")
+    parser.add_argument("-p", action='store_true', help="Set the port")
+
 
     confpath = os.path.join(os.path.dirname(os.path.realpath(__file__)), "Config.conf")
     if os.path.exists(confpath):
@@ -180,12 +183,12 @@ def main(addr=None, gatttool="gatttool", check_battery=False, hr_handle=None, de
                 uuid = gt.match.group(2).decode()
 
                 if uuid == "00002902" and hr_handle:
-                    log.info("Scanning 00002902 for hr_ctl_handle");
+                    log.debug("Scanning 00002902 for hr_ctl_handle");
                     hr_ctl_handle = handle
                     break
 
                 elif uuid == "00002a37":
-                    log.info("Scanning 00002a37 for hr_handle");
+                    log.debug("Scanning 00002a37 for hr_handle");
                     hr_handle = handle
 
             if hr_handle == None:
@@ -237,7 +240,6 @@ def main(addr=None, gatttool="gatttool", check_battery=False, hr_handle=None, de
             res = interpret(list(data))
 
             log.debug(res)
-
 
     # We quit close the BLE connection properly
     gt.sendline("quit")
@@ -311,6 +313,10 @@ def writeout(hr,hrv,bt,ct):
 		datafile.seek(13 if hr is None else 0)
 		datafile.write(".{:4s}.{:1s}".format(str(bt),"1" if ct is True else "0") if hr is None else "{:4s}.{:8.4f}".format(str(hr),hrv))
 
+def http(webport):
+    server = SimpleWebSocketServer('', webport, SimpleEcho)
+    server.serveforever()
+
 if __name__ == "__main__":
 
     args = parse_args()
@@ -330,12 +336,26 @@ if __name__ == "__main__":
     clithread = threading.Thread(target=cli, daemon=True)
     clithread.start()
 
-    log.info("SimpleEcho Started on port 8123");
-    server = SimpleWebSocketServer('', 8123, SimpleEcho)
-    server.serveforever()
+    hostname = socket.gethostname()
+    local_ip = socket.gethostbyname(hostname)
+
+    log.info("SimpleEcho Started ws://%s:%s" % (local_ip, args.p));
+	
+    wthread = threading.Thread(target=http, args=(args.p,), daemon=True)
+    wthread.start()
 
 
     while True:
-        clithread.join()
-        if not clithread.isAlive():
-            break
+        time.sleep(10)
+        user_input = input("[Bluetooth Control]: ")
+
+        if user_input == "quit":
+            log.info("Exiting HRM");
+            exit(0)
+        elif user_input == "help":
+            log.info("System Commands");
+            log.info("---------------");
+            log.info("Quit - Exit the program and terminate process");
+            log.info("Help - Shows this help ");
+        else:
+            print("This is not a correct command.")
