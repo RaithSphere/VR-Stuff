@@ -20,6 +20,15 @@ import threading
 import socket
 from SimpleWebSocketServer import SimpleWebSocketServer, WebSocket
 
+from sys import platform
+
+# For windows we are using BleakClient 
+if platform == "win32" or platform == "win64":
+   from bleak import BleakClient
+   from bleak import _logger as logger
+   import asyncio
+   HR_UUID = "00002a37-0000-1000-8000-00805f9b34fb"
+   BT_UUID = "00002a19-0000-1000-8000-00805f9b34fb"
 
 datafile = open("hrbt.txt","w")
 
@@ -118,9 +127,87 @@ def cli():
     Entry point for the command line interface
     """
     log.info("Starting CLI Thread")
-    main(args.m, args.g, args.b, args.H, args.d)
 
-def main(addr=None, gatttool="gatttool", check_battery=False, hr_handle=None, debug_gatttool=False):
+    if platform == "linux" or platform == "linux2":
+        log.info("Detected Platform Linux")
+        main_linux(args.m, args.g, args.b, args.H, args.d)
+
+def connect(loop):
+	Connected = True
+
+	loop.run_until_complete(main_windows(args.m))
+
+async def main_windows(address=None):
+	async with BleakClient(address) as client:
+		x = await client.is_connected()
+		log.info("Connected, steaming data...")
+
+		await client.start_notify(HR_UUID,processhr)
+
+		while True:
+			global BT
+			global CT
+
+			BT = int.from_bytes(await client.read_gatt_char(BT_UUID), byteorder = "big")
+			writeout(None,None,BT,CT)
+			await asyncio.sleep(1.0)
+
+		await asyncio.sleep(86400.00)
+
+		await client.stop_notify(HR_UUID)
+
+def processhr(s,d):
+	byte0 = d[0]
+	res = {}
+	res["hrv_uint8"] = (byte0 & 1) == 0
+	sensor_contact = (byte0 >> 1) == 8
+	if sensor_contact:
+		res["sensor_contact"] = "Contact detected"
+	else:
+		res["sensor_contact"] = "No contact detected"
+
+	res["ee_status"] = ((byte0 >> 3) & 1) == 1
+	res["rr_interval"] = ((byte0 >> 4) & 1) == 1
+
+	if res["hrv_uint8"]:
+		res["hr"] = d[1]
+		i = 2
+	else:
+		res["hr"] = (d[2] << 8) | d[1]
+		i = 3
+
+	if res["ee_status"]:
+		res["ee"] = (d[i + 1] << 8) | d[i]
+		i += 2
+
+	if res["rr_interval"]:
+		res["rr"] = []
+		while i < len(d):
+			# Note: Need to divide the value by 1024 to get in seconds
+			res["rr"].append((d[i + 1] << 8) | d[i])
+			i += 2
+
+	global HRV
+	if res["rr_interval"]:
+		for i in res["rr"]:
+			TwentyfourBeatAvg.insert(0,i)
+			del TwentyfourBeatAvg[-1]
+
+		global RRAvg
+		for i in range(FinalSamples):
+			n = i*2
+			nextn = TwentyfourBeatAvg[n+1] if TwentyfourBeatAvg[n+1] != 0 else TwentyfourBeatAvg[n]
+			RRAvg[i] = pow(TwentyfourBeatAvg[n]-nextn,2)
+
+		HRV = math.sqrt(statistics.mean(RRAvg))
+
+	global CT
+	CT = sensor_contact
+
+
+	writeout(res["hr"],HRV,None,None)
+
+def main_linux(addr=None, gatttool="gatttool", check_battery=False, hr_handle=None, debug_gatttool=False):
     """
     main routine to which orchestrates everything
     """
@@ -333,9 +420,6 @@ if __name__ == "__main__":
         log.setLevel(logging.INFO)
         log.info("Log Level set to INFOMATIVE");
 
-    clithread = threading.Thread(target=cli, daemon=True)
-    clithread.start()
-
     hostname = socket.gethostname()
     local_ip = socket.gethostbyname(hostname)
 
@@ -344,6 +428,17 @@ if __name__ == "__main__":
     wthread = threading.Thread(target=http, args=(args.p,), daemon=True)
     wthread.start()
 
+
+    if platform == "darwin":
+        log.info("Detected Platform Darwin - Unsupported - Terminating Process")
+        quit()
+    elif platform == "win32" or platform == "win64":
+        log.info("Detected Platform Windows - Experimental")
+        loop = asyncio.get_event_loop()
+        connect(loop)
+    elif platform == "linux" or platform == "linux2":
+        clithread = threading.Thread(target=cli, daemon=True)
+        clithread.start()
 
     while True:
         time.sleep(10)
