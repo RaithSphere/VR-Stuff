@@ -24,9 +24,9 @@ The data output from the websocket is 4 bytes, 8 bytes, 4 bytes, 1 byte - HR, HR
 
 ## Contributions
 
-If you want to Contribute to middy please feel free to fork this repo
+If you want to Contribute please feel free to fork this repo
 
 ## Thanks and Other Stuff
-<BR>Ryuvi for the Initial idea, websocket code and HRV
+Ryuvi for the Initial idea, websocket code and HRV
 <BR>Fabien (fg1) for the Intital code I based off
 <BR>Carte Noir for the coffee for keeping me going
