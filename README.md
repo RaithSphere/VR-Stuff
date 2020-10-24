@@ -1,12 +1,10 @@
 # NeosVR Heartrate Monitor
 
-[![PyPI](https://img.shields.io/pypi/pyversions/discord.py.svg)]()
-
 Heart rate monitor system made for NeosVR using websockets
 
 Before installing and running your own instance of NeosVR-HRM, you will first need to install the following:
 
-* Python 3.6
+* Python 3.6 Due to Bleak Requirements in Windows
 * Pip
 
 **Knowlege of LogiX in NeosVR is required to make this work**
