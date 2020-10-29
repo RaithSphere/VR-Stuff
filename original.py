@@ -9,6 +9,7 @@ from bleak import _logger as logger
 
 HR_UUID = "00002a37-0000-1000-8000-00805f9b34fb"
 BT_UUID = "00002a19-0000-1000-8000-00805f9b34fb"
+MODEL_NBR_UUID = "00002a24-0000-1000-8000-00805f9b34fb"
 
 Connected = False
 
@@ -23,8 +24,10 @@ CT = False
 datafile = open("hrbt.txt","w")
 
 def processhr(s,d):
+
 	byte0 = d[0]
 	res = {}
+
 	res["hrv_uint8"] = (byte0 & 1) == 0
 	sensor_contact = (byte0 >> 1) == 8
 	if sensor_contact:
@@ -76,13 +79,16 @@ async def run(address):
 	async with BleakClient(address) as client:
 		x = await client.is_connected()
 		print("Connected, steaming data...")
+        
+		model_number = await client.read_gatt_char(MODEL_NBR_UUID)
+		print("Model Number: {0}".format("".join(map(chr, model_number))))
 
 		await client.start_notify(HR_UUID,processhr)
 
 		while True:
 			global BT
 			global CT
-
+			print("run true");
 			BT = int.from_bytes(await client.read_gatt_char(BT_UUID), byteorder = "big")
 			writeout(None,None,BT,CT)
 			await asyncio.sleep(1.0)
@@ -98,6 +104,7 @@ def connect(loop):
 
 if __name__ == "__main__":
 	print("--Starting NeosHeart Data Collection Process--")
+    
 
 	import os
 
@@ -108,10 +115,12 @@ if __name__ == "__main__":
 
 	def writeout(hr,hrv,bt,ct):
 		if hr is None and hrv is None and bt is None and ct is None:
+			print("No Data");
 			datafile.seek(0)
 			datafile.write(str("0000.00000000.0000.0"))
 			datafile.truncate()
 		else:
+			print("Ooo Data");
 			datafile.seek(13 if hr is None else 0)
 			datafile.write(".{:4s}.{:1s}".format(str(bt),"1" if ct is True else "0") if hr is None else "{:4s}.{:8.4f}".format(str(hr),hrv))
 
