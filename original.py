@@ -69,8 +69,7 @@ def processhr(s,d):
 
 	global CT
 	CT = sensor_contact
-
-
+	print (res["hr"]);
 	writeout(res["hr"],HRV,None,None)
 
 async def run(address):
@@ -103,7 +102,7 @@ if __name__ == "__main__":
 	import os
 
 	os.environ["PYTHONASYNCIODEBUG"] = str(1)
-	address = "C8:8C:CF:CE:0A:D7"
+	address = "FD:CF:5F:4C:74:83"
 
 	TwentyfourBeatAvg = [0 for i in range(FinalSamples*2)]
 
