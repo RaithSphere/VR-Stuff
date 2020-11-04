@@ -35,13 +35,13 @@ In addition to the above you will also need to run the command
 
 ## Config File
 In the config file you need to set port & Bluetooth MAC, 
-Leave B to 1 by default the websocket port is 8123 so you would connect to ws://myip:8123 - E.G ws://localhost:8123
+<BR>Leave B to 1 by default the websocket port is 8123 so you would connect to ws://myip:8123 - E.G ws://localhost:8123
 
 ## LogiX
 The data output from the websocket is 4 bytes, 8 bytes, 4 bytes, 1 byte - HR, HRV, BATTERY, CONNECTION STATUS
-CONNECTION STATUS 2: "No contact detected"
-CONNECTION STATUS 3: "Contact detected"
-CONNECTION STATUS ANY OTHER: "Sensor contact not supported"
+<BR>CONNECTION STATUS 2: "No contact detected"
+<BR>CONNECTION STATUS 3: "Contact detected"
+<BR>CONNECTION STATUS ANY OTHER: "Sensor contact not supported"
 
 ## Contributions
 If you want to Contribute please feel free to fork this repo
