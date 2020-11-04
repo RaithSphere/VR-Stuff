@@ -292,9 +292,6 @@ def main_linux(addr=None, gatttool="gatttool", check_battery=False, hr_handle=No
             log.info("Starting Heart Data Collection Process")
             gt.sendline("char-write-req " + hr_ctl_handle + " 0100")
 
-        global CT
-        writeout(None,None,BT,CT)
-
         # Time period between two measures. This will be updated automatically.
         period = 1.
         last_measure = time.time() - period
@@ -332,6 +329,9 @@ def main_linux(addr=None, gatttool="gatttool", check_battery=False, hr_handle=No
             res = interpret(list(data))
 
             log.debug(res)
+
+            global CT
+            writeout(None,None,BT,CT)
 
     # We quit close the BLE connection properly
     gt.sendline("quit")
@@ -397,7 +397,7 @@ def interpret(data):
                 RRAvg[i] = pow(TwentyfourBeatAvg[n]-nextn,2)
        HRV = math.sqrt(statistics.mean(RRAvg))
 
-    writeout(res["hr"],HRV,None,None)
+    writeout(res["hr"],HRV,None,CT)
 
     return res
 
