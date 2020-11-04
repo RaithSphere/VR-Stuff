@@ -42,6 +42,15 @@ BT = -1
 CT = False
 TwentyfourBeatAvg = [0 for i in range(FinalSamples*2)]
 
+log.setLevel(logging.INFO)
+log.info("Starting Script")
+
+if os.path.isfile('Config.conf'):
+    log.info("Found config file")
+else:
+    log.error("ERROR: Unable to find config file Config.conf, check the filename")
+    exit()
+
 class SimpleEcho(WebSocket):
 
     def handleMessage(self):
@@ -51,10 +60,10 @@ class SimpleEcho(WebSocket):
         hrbt.close()
 
     def handleConnected(self):
-        print(self.address, 'connected')
+        log.info(self.address, 'connected')
 
     def handleClose(self):
-        print(self.address, 'closed')
+        log.info(self.address, 'closed')
 
 
 def parse_args():
@@ -155,11 +164,18 @@ def processhr(s,d):
 	byte0 = d[0]
 	res = {}
 	res["hrv_uint8"] = (byte0 & 1) == 0
-	sensor_contact = (byte0 >> 1) == 8
-	if sensor_contact:
-		res["sensor_contact"] = "Contact detected"
-	else:
+	sensor_contact = (byte0 >> 1) & 3
+
+	global CT
+
+	if sensor_contact == 2:
 		res["sensor_contact"] = "No contact detected"
+		CT = False
+	elif sensor_contact == 3:
+		res["sensor_contact"] = "Contact detected"
+		CT = True
+	else:
+		res["sensor_contact"] = "Sensor contact not supported"
 
 	res["ee_status"] = ((byte0 >> 3) & 1) == 1
 	res["rr_interval"] = ((byte0 >> 4) & 1) == 1
@@ -195,10 +211,6 @@ def processhr(s,d):
 			RRAvg[i] = pow(TwentyfourBeatAvg[n]-nextn,2)
 
 		HRV = math.sqrt(statistics.mean(RRAvg))
-
-	global CT
-	CT = sensor_contact
-
 
 	writeout(res["hr"],HRV,None,None)
 
@@ -336,15 +348,20 @@ def interpret(data):
     byte0 = data[0]
     res = {}
     res["hrv_uint8"] = (byte0 & 1) == 0
-    sensor_contact = (byte0 >> 1) & 3
+    sensor_contact = (byte0 >> 1) == 8
+
+    global CT
+
     if sensor_contact == 2:
         res["sensor_contact"] = "No contact detected"
+        CT = False
     elif sensor_contact == 3:
         res["sensor_contact"] = "Contact detected"
+        CT = True
     else:
         res["sensor_contact"] = "Sensor contact not supported"
 
-    global CT
+
     CT = sensor_contact
 
     res["ee_status"] = ((byte0 >> 3) & 1) == 1
@@ -427,6 +444,7 @@ if __name__ == "__main__":
         quit()
     elif platform == "win32" or platform == "win64":
         log.info("Detected Platform Windows - Experimental")
+        log.info("Connecting to " + args.m)
         loop = asyncio.get_event_loop()
         connect(loop)
     elif platform == "linux" or platform == "linux2":
