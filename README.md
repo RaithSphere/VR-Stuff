@@ -39,9 +39,7 @@ In the config file you need to set port & Bluetooth MAC,
 
 ## LogiX
 The data output from the websocket is 4 bytes, 8 bytes, 4 bytes, 1 byte - HR, HRV, BATTERY, CONNECTION STATUS
-<BR>CONNECTION STATUS 2: "No contact detected"
-<BR>CONNECTION STATUS 3: "Contact detected"
-<BR>CONNECTION STATUS ANY OTHER: "Sensor contact not supported"
+Connection Status will return either 0 or 1, 1 being the sensor has a connection to the body.
 
 ## Contributions
 If you want to Contribute please feel free to fork this repo
