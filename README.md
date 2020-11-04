@@ -3,10 +3,14 @@
 `NeosVR-HRM` is a Python script that listens to data from Bluetooth Low Energy (BLE) heart rate sensors 
 
 ## Supported Devices
-`NeosVR-HRM` shoould support any devices that use the service UUID "180d" and with characteristic "2a37"
+`NeosVR-HRM` shoould support any devices that use the service UUID "180d" and with characteristic "2a37", below is a list of known working devices that have been tested
 
-Name | Picture | Link
+Device | Picture | Link
 --- | --- | ---
+XOSS Chest Strap | --- | [Amazon US](https://www.amazon.com/XOSS-Monitor-Bluetooth-Wireless-Accessories/dp/B0822SFPTF/ref=sr_1_10?dchild=1&keywords=Xoss&qid=1604338218&sr=8-10&th=1) - [Amazon UK](https://www.amazon.co.uk/XOSS-Monitor-Bluetooth-Waterproof-Computers/dp/B087LWS3BN/ref=sr_1_7?dchild=1&keywords=Xoss&qid=1604476420&sr=8-7)
+CooSpo Heart Rate Monitor | --- | [Amazon UK](https://www.amazon.co.uk/CooSpo-Monitor-Bluetooth-Training-concept2/dp/B07SFTNXSD/)
+Polar H9 | --- |  [Amazon UK](https://www.amazon.co.uk/POLAR-Unisexs-Sensor-Bluetooth-Waterproof-Monitor/dp/B08411DQ96)
+Polar H10 | --- | [Amazon UK](https://www.amazon.co.uk/Polar-Monitor-Bluetooth-Waterproof-Sensor/dp/B07PM54P4N)
 
 ## Requirements
 * Python 3.6 Due to Bleak Requirements in Windows - Do not use versions higher
