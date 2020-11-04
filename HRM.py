@@ -348,7 +348,7 @@ def interpret(data):
     byte0 = data[0]
     res = {}
     res["hrv_uint8"] = (byte0 & 1) == 0
-	sensor_contact = (byte0 >> 1) & 3
+    sensor_contact = (byte0 >> 1) & 3
 
     global CT
 
