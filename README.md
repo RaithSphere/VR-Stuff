@@ -2,19 +2,25 @@
 
 `NeosVR-HRM` is a Python script that listens to data from Bluetooth Low Energy (BLE) heart rate sensors 
 
+## Supported Devices
+`NeosVR-HRM` shoould support any devices that use the service UUID "180d" and with characteristic "2a37"
+
+Name | Picture | Link
+--- | --- | ---
+
 ## Requirements
-* Python 3.6 Due to Bleak Requirements in Windows
+* Python 3.6 Due to Bleak Requirements in Windows - Do not use versions higher
 * Pip
 * SimpleWebSocketServer
+* pexpect
 * BleakClient - Windows Only
 * asyncio - Windows Only
-
 
 ## Instructions
 * Clone this repo: `git clone https://github.com/RaithSphere/NeosVR-HRM`
 * Attach the HRM to its strap and put it on.
 * Ensure no other applications or devices are connected (listening) to the HRM.
-* Scan for your device MAC Address.
+* Scan for your device MAC Address using discover.py (Windows Only).
 * Run the command "python -m pip install -r requirements.txt" - If you are using Linux make sure its Python 3.6 the command is linked to
 * Add your MAC Address to Config.example and rename to Config.conf
 * Start the script by doing **python3 HRM.py** or **python HRM.py**
@@ -34,11 +40,11 @@ CONNECTION STATUS 3: "Contact detected"
 CONNECTION STATUS ANY OTHER: "Sensor contact not supported"
 
 ## Contributions
-
 If you want to Contribute please feel free to fork this repo
 
 ## Thanks and Other Stuff
 Ryuvi for the Initial idea, websocket code and HRV
+<BR>3x1t_5tyl3, Goodvibes and MattyK for being the initial testers.
 <BR>Fabien (fg1) for the Intital code I based off
 <BR>Carte Noir for the coffee for keeping me going
 

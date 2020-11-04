@@ -1,5 +1,3 @@
-#!/usr/bin/python3
-
 # Copyright 2020 by RaithSphere
 # With thanks to Ryuvi
 # All rights reserved.
@@ -133,13 +131,10 @@ def cli():
         main_linux(args.m, args.g, args.b, args.H, args.d)
 
 def connect(loop):
-	Connected = True
-
 	loop.run_until_complete(main_windows(args.m))
 
 async def main_windows(address=None):
 	async with BleakClient(address) as client:
-		x = await client.is_connected()
 		log.info("Connected, steaming data...")
 
 		await client.start_notify(HR_UUID,processhr)
@@ -244,8 +239,6 @@ def main_linux(addr=None, gatttool="gatttool", check_battery=False, hr_handle=No
 
         log.info("Connected to " + addr)
 
-        TwentyfourBeatAvg = [0 for i in range(FinalSamples*2)]
-
         if check_battery:
             gt.sendline("char-read-uuid 00002a19-0000-1000-8000-00805f9b34fb")
             try:
@@ -270,12 +263,12 @@ def main_linux(addr=None, gatttool="gatttool", check_battery=False, hr_handle=No
                 uuid = gt.match.group(2).decode()
 
                 if uuid == "00002902" and hr_handle:
-                    log.debug("Scanning 00002902 for hr_ctl_handle");
+                    log.debug("Scanning 00002902 for hr_ctl_handle")
                     hr_ctl_handle = handle
                     break
 
                 elif uuid == "00002a37":
-                    log.debug("Scanning 00002a37 for hr_handle");
+                    log.debug("Scanning 00002a37 for hr_handle")
                     hr_handle = handle
 
             if hr_handle == None:
@@ -415,15 +408,15 @@ if __name__ == "__main__":
     # Increase verbose level
     if args.v:
         log.setLevel(logging.DEBUG)
-        log.info("Log level set to DEBUG");
+        log.info("Log level set to DEBUG")
     else:
         log.setLevel(logging.INFO)
-        log.info("Log Level set to INFOMATIVE");
+        log.info("Log Level set to INFOMATIVE")
 
     hostname = socket.gethostname()
     local_ip = socket.gethostbyname(hostname)
 
-    log.info("SimpleEcho Started ws://%s:%s" % (local_ip, args.p));
+    log.info("SimpleEcho Started ws://%s:%s" % (local_ip, args.p))
 	
     wthread = threading.Thread(target=http, args=(args.p,), daemon=True)
     wthread.start()
@@ -445,12 +438,12 @@ if __name__ == "__main__":
         user_input = input("[Bluetooth Control]: ")
 
         if user_input == "quit":
-            log.info("Exiting HRM");
+            log.info("Exiting HRM")
             exit(0)
         elif user_input == "help":
-            log.info("System Commands");
-            log.info("---------------");
-            log.info("Quit - Exit the program and terminate process");
-            log.info("Help - Shows this help ");
+            log.info("System Commands")
+            log.info("---------------")
+            log.info("Quit - Exit the program and terminate process")
+            log.info("Help - Shows this help ")
         else:
             print("This is not a correct command.")
