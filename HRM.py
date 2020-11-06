@@ -5,30 +5,30 @@
 # and is released under the "MIT License Agreement". Please see the LICENSE
 # file that should have been included as part of this package.
 
-import os
-import sys
-import time
-import logging
-import pexpect
-import math
 import argparse
 import configparser
-import statistics
-import threading
+import logging
+import math
+import os
 import socket
-from SimpleWebSocketServer import SimpleWebSocketServer, WebSocket
-
+import statistics
+import sys
+import threading
+import time
 from sys import platform
+
+import pexpect
+from SimpleWebSocketServer import SimpleWebSocketServer, WebSocket
 
 # For windows we are using BleakClient 
 if platform == "win32" or platform == "win64":
-   from bleak import BleakClient
-   from bleak import _logger as logger
-   import asyncio
-   HR_UUID = "00002a37-0000-1000-8000-00805f9b34fb"
-   BT_UUID = "00002a19-0000-1000-8000-00805f9b34fb"
+    from bleak import BleakClient
+    import asyncio
 
-datafile = open("hrbt.txt","w")
+    HR_UUID = "00002a37-0000-1000-8000-00805f9b34fb"
+    BT_UUID = "00002a19-0000-1000-8000-00805f9b34fb"
+
+datafile = open("hrbt.txt", "w")
 
 logging.basicConfig(format="%(asctime)-15s  %(message)s")
 log = logging.getLogger("HeartRateLogger")
@@ -40,7 +40,7 @@ HRV = 0
 RRAvg = [0 for i in range(FinalSamples)]
 BT = -1
 CT = False
-TwentyfourBeatAvg = [0 for i in range(FinalSamples*2)]
+TwentyfourBeatAvg = [0 for i in range(FinalSamples * 2)]
 
 log.setLevel(logging.INFO)
 log.info("Starting Script")
@@ -51,10 +51,11 @@ else:
     log.error("ERROR: Unable to find config file Config.conf, check the filename")
     exit()
 
+
 class SimpleEcho(WebSocket):
 
     def handleMessage(self):
-        hrbt = open("hrbt.txt","r")
+        hrbt = open("hrbt.txt", "r")
         data = hrbt.read()
         self.sendMessage(data)
         hrbt.close()
@@ -73,12 +74,13 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Bluetooth heart rate monitor data logger")
     parser.add_argument("-m", metavar='MAC', type=str, help="MAC address of BLE device (default: auto-discovery)")
     parser.add_argument("-b", action='store_true', help="Check battery level")
-    parser.add_argument("-g", metavar='PATH', type=str, help="gatttool path (default: system available)", default="gatttool")
-    parser.add_argument("-H", metavar='HR_HANDLE', type=str, help="Gatttool handle used for HR notifications (default: none)")
+    parser.add_argument("-g", metavar='PATH', type=str, help="gatttool path (default: system available)",
+                        default="gatttool")
+    parser.add_argument("-H", metavar='HR_HANDLE', type=str,
+                        help="Gatttool handle used for HR notifications (default: none)")
     parser.add_argument("-v", action='store_true', help="Verbose output")
     parser.add_argument("-d", action='store_true', help="Enable debug of gatttool")
     parser.add_argument("-p", action='store_true', help="Set the port")
-
 
     confpath = os.path.join(os.path.dirname(os.path.realpath(__file__)), "Config.conf")
     if os.path.exists(confpath):
@@ -101,6 +103,7 @@ def parse_args():
         parser.set_defaults(**config)
 
     return parser.parse_args()
+
 
 def get_ble_hr_mac():
     """
@@ -129,6 +132,7 @@ def get_ble_hr_mac():
     time.sleep(1)
     return addr
 
+
 def cli():
     """
     Entry point for the command line interface
@@ -139,80 +143,84 @@ def cli():
         log.info("Detected Platform Linux")
         main_linux(args.m, args.g, args.b, args.H, args.d)
 
+
 def connect(loop):
-	loop.run_until_complete(main_windows(args.m))
+    loop.run_until_complete(main_windows(args.m))
+
 
 async def main_windows(address=None):
-	async with BleakClient(address) as client:
-		log.info("Connected, steaming data...")
+    async with BleakClient(address) as client:
+        log.info("Connected, steaming data...")
 
-		await client.start_notify(HR_UUID,processhr)
+        await client.start_notify(HR_UUID, processhr)
 
-		while True:
-			global BT
-			global CT
+        while True:
+            global BT
+            global CT
 
-			BT = int.from_bytes(await client.read_gatt_char(BT_UUID), byteorder = "big")
-			writeout(None,None,BT,CT)
-			await asyncio.sleep(1.0)
+            BT = int.from_bytes(await client.read_gatt_char(BT_UUID), byteorder="big")
+            writeout(None, None, BT, CT)
+            await asyncio.sleep(1.0)
 
-		await asyncio.sleep(86400.00)
+        await asyncio.sleep(86400.00)
 
-		await client.stop_notify(HR_UUID)
+        await client.stop_notify(HR_UUID)
 
-def processhr(s,d):
-	byte0 = d[0]
-	res = {}
-	res["hrv_uint8"] = (byte0 & 1) == 0
-	sensor_contact = (byte0 >> 1) & 3
 
-	global CT
+def processhr(s, d):
+    byte0 = d[0]
+    res = {}
+    res["hrv_uint8"] = (byte0 & 1) == 0
+    sensor_contact = (byte0 >> 1) & 3
 
-	if sensor_contact == 2:
-		res["sensor_contact"] = "No contact detected"
-		CT = False
-	elif sensor_contact == 3:
-		res["sensor_contact"] = "Contact detected"
-		CT = True
-	else:
-		res["sensor_contact"] = "Sensor contact not supported"
+    global CT
 
-	res["ee_status"] = ((byte0 >> 3) & 1) == 1
-	res["rr_interval"] = ((byte0 >> 4) & 1) == 1
+    if sensor_contact == 2:
+        res["sensor_contact"] = "No contact detected"
+        CT = False
+    elif sensor_contact == 3:
+        res["sensor_contact"] = "Contact detected"
+        CT = True
+    else:
+        res["sensor_contact"] = "Sensor contact not supported"
 
-	if res["hrv_uint8"]:
-		res["hr"] = d[1]
-		i = 2
-	else:
-		res["hr"] = (d[2] << 8) | d[1]
-		i = 3
+    res["ee_status"] = ((byte0 >> 3) & 1) == 1
+    res["rr_interval"] = ((byte0 >> 4) & 1) == 1
 
-	if res["ee_status"]:
-		res["ee"] = (d[i + 1] << 8) | d[i]
-		i += 2
+    if res["hrv_uint8"]:
+        res["hr"] = d[1]
+        i = 2
+    else:
+        res["hr"] = (d[2] << 8) | d[1]
+        i = 3
 
-	if res["rr_interval"]:
-		res["rr"] = []
-		while i < len(d):
-			# Note: Need to divide the value by 1024 to get in seconds
-			res["rr"].append((d[i + 1] << 8) | d[i])
-			i += 2
+    if res["ee_status"]:
+        res["ee"] = (d[i + 1] << 8) | d[i]
+        i += 2
 
-	global HRV
-	if res["rr_interval"]:
-		for i in res["rr"]:
-			TwentyfourBeatAvg.insert(0,i)
-			del TwentyfourBeatAvg[-1]
+    if res["rr_interval"]:
+        res["rr"] = []
+        while i < len(d):
+            # Note: Need to divide the value by 1024 to get in seconds
+            res["rr"].append((d[i + 1] << 8) | d[i])
+            i += 2
 
-		global RRAvg
-		for i in range(FinalSamples):
-			n = i*2
-			nextn = TwentyfourBeatAvg[n+1] if TwentyfourBeatAvg[n+1] != 0 else TwentyfourBeatAvg[n]
-			RRAvg[i] = pow(TwentyfourBeatAvg[n]-nextn,2)
+    global HRV
+    if res["rr_interval"]:
+        for i in res["rr"]:
+            TwentyfourBeatAvg.insert(0, i)
+            del TwentyfourBeatAvg[-1]
 
-		HRV = math.sqrt(statistics.mean(RRAvg))
+        global RRAvg
+        for i in range(FinalSamples):
+            n = i * 2
+            nextn = TwentyfourBeatAvg[n + 1] if TwentyfourBeatAvg[n + 1] != 0 else TwentyfourBeatAvg[n]
+            RRAvg[i] = pow(TwentyfourBeatAvg[n] - nextn, 2)
 
-	writeout(res["hr"],HRV,None,None)
+        HRV = math.sqrt(statistics.mean(RRAvg))
+
+    writeout(res["hr"], HRV, None, None)
+
 
 def main_linux(addr=None, gatttool="gatttool", check_battery=False, hr_handle=None, debug_gatttool=False):
     """
@@ -268,7 +276,8 @@ def main_linux(addr=None, gatttool="gatttool", check_battery=False, hr_handle=No
 
             while 1:
                 try:
-                    gt.expect(r"handle: (0x[0-9a-f]+), uuid: ([0-9a-f]{8})", timeout=60)  # Had to increase the timeout from 10 for Wahoo Tickr X
+                    gt.expect(r"handle: (0x[0-9a-f]+), uuid: ([0-9a-f]{8})",
+                              timeout=60)  # Had to increase the timeout from 10 for Wahoo Tickr X
                 except pexpect.TIMEOUT:
                     break
                 handle = gt.match.group(1).decode()
@@ -305,12 +314,12 @@ def main_linux(addr=None, gatttool="gatttool", check_battery=False, hr_handle=No
                 # If the timer expires, it means that we have lost the
                 # connection with the HR monitor
                 log.warn("Connection lost with " + addr + ". Reconnecting.")
-                writeout(0,0,0,0)
+                writeout(0, 0, 0, 0)
                 time.sleep(1)
                 break
 
             except KeyboardInterrupt:
-                writeout(0,0,0,0)
+                writeout(0, 0, 0, 0)
                 log.info("Received keyboard interrupt. Quitting cleanly.")
                 retry = False
                 clithread.join()
@@ -331,7 +340,7 @@ def main_linux(addr=None, gatttool="gatttool", check_battery=False, hr_handle=No
             log.debug(res)
 
             global CT
-            writeout(None,None,BT,CT)
+            writeout(None, None, BT, CT)
 
     # We quit close the BLE connection properly
     gt.sendline("quit")
@@ -339,6 +348,7 @@ def main_linux(addr=None, gatttool="gatttool", check_battery=False, hr_handle=No
         gt.wait()
     except:
         pass
+
 
 def interpret(data):
     """
@@ -384,32 +394,37 @@ def interpret(data):
 
     global HRV
     if res["rr_interval"]:
-       for i in res["rr"]:
-                TwentyfourBeatAvg.insert(0,i)
-                del TwentyfourBeatAvg[-1]
-       global RRAvg
-       for i in range(FinalSamples):
-                n = i*2
-                nextn = TwentyfourBeatAvg[n+1] if TwentyfourBeatAvg[n+1] != 0 else TwentyfourBeatAvg[n]
-                RRAvg[i] = pow(TwentyfourBeatAvg[n]-nextn,2)
-       HRV = math.sqrt(statistics.mean(RRAvg))
+        for i in res["rr"]:
+            TwentyfourBeatAvg.insert(0, i)
+            del TwentyfourBeatAvg[-1]
+        global RRAvg
+        for i in range(FinalSamples):
+            n = i * 2
+            nextn = TwentyfourBeatAvg[n + 1] if TwentyfourBeatAvg[n + 1] != 0 else TwentyfourBeatAvg[n]
+            RRAvg[i] = pow(TwentyfourBeatAvg[n] - nextn, 2)
+        HRV = math.sqrt(statistics.mean(RRAvg))
 
-    writeout(res["hr"],HRV,None,None)
+    writeout(res["hr"], HRV, None, None)
 
     return res
 
-def writeout(hr,hrv,bt,ct):
-	if hr is None and hrv is None and bt is None and ct is None:
-		datafile.seek(0)
-		datafile.write(str("0000.00000000.0000.0"))
-		datafile.truncate()
-	else:
-		datafile.seek(13 if hr is None else 0)
-		datafile.write(".{:4s}.{:1s}".format(str(bt),"1" if ct is True else "0") if hr is None else "{:4s}.{:8.4f}".format(str(hr),hrv))
+
+def writeout(hr, hrv, bt, ct):
+    if hr is None and hrv is None and bt is None and ct is None:
+        datafile.seek(0)
+        datafile.write(str("0000.00000000.0000.0"))
+        datafile.truncate()
+    else:
+        datafile.seek(13 if hr is None else 0)
+        datafile.write(
+            ".{:4s}.{:1s}".format(str(bt), "1" if ct is True else "0") if hr is None else "{:4s}.{:8.4f}".format(
+                str(hr), hrv))
+
 
 def http(webport):
     server = SimpleWebSocketServer('', webport, SimpleEcho)
     server.serveforever()
+
 
 if __name__ == "__main__":
 
@@ -431,10 +446,9 @@ if __name__ == "__main__":
     local_ip = socket.gethostbyname(hostname)
 
     log.info("SimpleEcho Started ws://%s:%s" % (local_ip, args.p))
-	
+
     wthread = threading.Thread(target=http, args=(args.p,), daemon=True)
     wthread.start()
-
 
     if platform == "darwin":
         log.info("Detected Platform Darwin - Unsupported - Terminating Process")
