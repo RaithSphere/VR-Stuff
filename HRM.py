@@ -60,10 +60,10 @@ class SimpleEcho(WebSocket):
         hrbt.close()
 
     def handleConnected(self):
-        log.info(self.address, 'connected')
+        print(self.address, 'connected')
 
     def handleClose(self):
-        log.info(self.address, 'closed')
+        print(self.address, 'closed')
 
 
 def parse_args():
@@ -361,9 +361,6 @@ def interpret(data):
     else:
         res["sensor_contact"] = "Sensor contact not supported"
 
-
-    CT = sensor_contact
-
     res["ee_status"] = ((byte0 >> 3) & 1) == 1
     res["rr_interval"] = ((byte0 >> 4) & 1) == 1
 
@@ -397,7 +394,7 @@ def interpret(data):
                 RRAvg[i] = pow(TwentyfourBeatAvg[n]-nextn,2)
        HRV = math.sqrt(statistics.mean(RRAvg))
 
-    writeout(res["hr"],HRV,None,CT)
+    writeout(res["hr"],HRV,None,None)
 
     return res
 
