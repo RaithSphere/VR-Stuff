@@ -24,14 +24,14 @@ Polar H10 | --- | [Amazon US](https://www.amazon.com/Polar-Heart-Rate-Monitor-Wo
 * Clone this repo: `git clone https://github.com/RaithSphere/NeosVR-HRM`
 * Attach the HRM to its strap and put it on.
 * Ensure no other applications or devices are connected (listening) to the HRM.
-* Scan for your device MAC Address using discover.py (Windows Only).
 * Run the command "python -m pip install -r requirements.txt" - If you are using Linux make sure its Python 3.6 the command is linked to
+* Scan for your device MAC Address using discover.py (Windows Only).
 * Add your MAC Address to Config.example and rename to Config.conf
 * Start the script by doing **python3 HRM.py** or **python HRM.py**
 
 ## Windows Only
 In addition to the above you will also need to run the command
-* python -m pip install BleakClient asyncio
+* python -m pip install bleak asyncio
 
 ## Config File
 In the config file you need to set port & Bluetooth MAC, 
