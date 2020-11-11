@@ -17,7 +17,7 @@ Polar H10 | --- | [Amazon US](https://www.amazon.com/Polar-Heart-Rate-Monitor-Wo
 * Pip
 * SimpleWebSocketServer
 * pexpect
-* BleakClient - Windows Only
+* bleak - Windows Only
 * asyncio - Windows Only
 
 ## Instructions
@@ -25,6 +25,7 @@ Polar H10 | --- | [Amazon US](https://www.amazon.com/Polar-Heart-Rate-Monitor-Wo
 * Attach the HRM to its strap and put it on.
 * Ensure no other applications or devices are connected (listening) to the HRM.
 * Run the command "python -m pip install -r requirements.txt" - If you are using Linux make sure its Python 3.6 the command is linked to
+* If your using windows please check the windows only section before proceeding
 * Scan for your device MAC Address using discover.py (Windows Only).
 * Add your MAC Address to Config.example and rename to Config.conf
 * Start the script by doing **python3 HRM.py** or **python HRM.py**
