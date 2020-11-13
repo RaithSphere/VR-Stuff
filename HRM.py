@@ -39,12 +39,14 @@ FinalSamples = 24
 HR = -1
 HRV = 0
 RRAvg = [0 for i in range(FinalSamples)]
-BT = -1
-CT = False
+bt = -1
+ct = False
+
 TwentyfourBeatAvg = [0 for i in range(FinalSamples * 2)]
 
 log.setLevel(logging.INFO)
 log.info("Starting Script")
+
 
 class SimpleEcho(WebSocket):
 
@@ -75,9 +77,7 @@ def parse_args():
     parser.add_argument("-v", action='store_true', help="Verbose output")
     parser.add_argument("-d", action='store_true', help="Enable debug of gatttool")
     parser.add_argument("-port", action='store_true', help="Set the port")
-
-    if platform == "win32" or platform == "win64":
-        parser.add_argument("-s", action='store_true', help="Scan for bluetooth devices")
+    parser.add_argument("-s", action='store_true', help="Scan for bluetooth devices - Windows only")
 
     confpath = os.path.join(os.path.dirname(os.path.realpath(__file__)), "Config.conf")
     if os.path.exists(confpath):
@@ -88,10 +88,10 @@ def parse_args():
 
         # We compare here the configuration given in the config file with the
         # configuration of the parser.
-        args = vars(parser.parse_args([]))
+        arguments = vars(parser.parse_args([]))
         err = False
         for key in config.keys():
-            if key not in args:
+            if key not in arguments:
                 log.error("Configuration file error: invalid key '" + key + "'.")
                 err = True
         if err:
@@ -107,6 +107,7 @@ def get_ble_hr_mac():
     Scans BLE devices and returs the address of the first device found.
     """
 
+    global addr
     while 1:
         log.info("Trying to find a BLE device")
         hci = pexpect.spawn("hcitool lescan")
@@ -141,8 +142,8 @@ def cli():
         main_linux(args.mac, args.g, args.battery, args.H, args.d)
 
 
-def connect(loop):
-    loop.run_until_complete(main_windows(args.mac))
+def connect(windows):
+    windows.run_until_complete(main_windows(args.mac))
 
 
 async def main_windows(address=None):
@@ -152,32 +153,26 @@ async def main_windows(address=None):
         await client.start_notify(HR_UUID, processhr)
 
         while True:
-            global BT
-            global CT
+            global bt, ct
 
-            BT = int.from_bytes(await client.read_gatt_char(BT_UUID), byteorder="big")
-            writeout(None, None, BT, CT)
+            bt = int.from_bytes(await client.read_gatt_char(BT_UUID), byteorder="big")
+            writeout(None, None, bt, ct)
             await asyncio.sleep(1.0)
-
-        await asyncio.sleep(86400.00)
-
-        await client.stop_notify(HR_UUID)
 
 
 def processhr(s, d):
     byte0 = d[0]
-    res = {}
-    res["hrv_uint8"] = (byte0 & 1) == 0
+    res = {"hrv_uint8": (byte0 & 1) == 0}
     sensor_contact = (byte0 >> 1) & 3
 
-    global CT
+    global ct
 
     if sensor_contact == 2:
         res["sensor_contact"] = "No contact detected"
-        CT = False
+        ct = False
     elif sensor_contact == 3:
         res["sensor_contact"] = "Contact detected"
-        CT = True
+        ct = True
     else:
         res["sensor_contact"] = "Sensor contact not supported"
 
@@ -262,11 +257,11 @@ def main_linux(addr=None, gatttool="gatttool", check_battery=False, hr_handle=No
                 gt.expect("value: ([0-9a-f]+)")
                 battery_level = gt.match.group(1)
                 log.info("Battery level: " + str(int(battery_level, 16)))
-                BT = str(int(battery_level, 16))
+                battery = str(int(battery_level, 16))
             except pexpect.TIMEOUT:
                 log.error("Couldn't read battery level.")
 
-        if hr_handle == None:
+        if hr_handle is None:
             # We determine which handle we should read for getting the heart rate
             # measurement characteristic.
             gt.sendline("char-desc")
@@ -289,7 +284,7 @@ def main_linux(addr=None, gatttool="gatttool", check_battery=False, hr_handle=No
                     log.debug("Scanning 00002a37 for hr_handle")
                     hr_handle = handle
 
-            if hr_handle == None:
+            if hr_handle is None:
                 log.error("Couldn't find the heart rate measurement handle?!")
                 return
 
@@ -310,7 +305,7 @@ def main_linux(addr=None, gatttool="gatttool", check_battery=False, hr_handle=No
             except pexpect.TIMEOUT:
                 # If the timer expires, it means that we have lost the
                 # connection with the HR monitor
-                log.warn("Connection lost with " + addr + ". Reconnecting.")
+                log.warning("Connection lost with " + addr + ". Reconnecting.")
                 writeout(0, 0, 0, 0)
                 time.sleep(1)
                 break
@@ -336,8 +331,8 @@ def main_linux(addr=None, gatttool="gatttool", check_battery=False, hr_handle=No
 
             log.debug(res)
 
-            global CT
-            writeout(None, None, BT, CT)
+            global ct, bt
+            writeout(None, None, bt, ct)
 
     # We quit close the BLE connection properly
     gt.sendline("quit")
@@ -357,14 +352,14 @@ def interpret(data):
     res["hrv_uint8"] = (byte0 & 1) == 0
     sensor_contact = (byte0 >> 1) & 3
 
-    global CT
+    global ct
 
     if sensor_contact == 2:
         res["sensor_contact"] = "No contact detected"
-        CT = False
+        ct = False
     elif sensor_contact == 3:
         res["sensor_contact"] = "Contact detected"
-        CT = True
+        ct = True
     else:
         res["sensor_contact"] = "Sensor contact not supported"
 
@@ -406,21 +401,24 @@ def interpret(data):
     return res
 
 
-def writeout(hr, hrv, bt, ct):
-    if hr is None and hrv is None and bt is None and ct is None:
+def writeout(hr, hrv, battery, contact):
+    if hr is None and hrv is None and battery is None and contact is None:
         datafile.seek(0)
         datafile.write(str("0000.00000000.0000.0"))
         datafile.truncate()
     else:
         datafile.seek(13 if hr is None else 0)
         datafile.write(
-            ".{:4s}.{:1s}".format(str(bt), "1" if ct is True else "0") if hr is None else "{:4s}.{:8.4f}".format(
+            ".{:4s}.{:1s}".format(str(battery),
+                                  "1" if contact is True else "0") if hr is None else "{:4s}.{:8.4f}".format(
                 str(hr), hrv))
+
 
 async def searchbt():
     devices = await discover()
     for d in devices:
         log.info(d)
+
 
 def http(webport):
     server = SimpleWebSocketServer('', webport, SimpleEcho)
@@ -431,7 +429,7 @@ if __name__ == "__main__":
 
     args = parse_args()
 
-    if args.s:
+    if args.s and platform == "win32" or platform == "win64":
         log.info("Starting bluetooth device scan")
         loop = asyncio.get_event_loop()
         loop.run_until_complete(searchbt())
