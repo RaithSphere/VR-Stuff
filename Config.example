@@ -1,4 +1,4 @@
 [config]
-m = FD:CF:5F:4C:74:83
-b = 1
-p = 8123
+mac = FD:CF:5F:4C:74:83
+battery = 1
+port = 8123

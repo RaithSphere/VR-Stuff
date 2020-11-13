@@ -23,6 +23,7 @@ from SimpleWebSocketServer import SimpleWebSocketServer, WebSocket
 # For windows we are using BleakClient 
 if platform == "win32" or platform == "win64":
     from bleak import BleakClient
+    from bleak import discover
     import asyncio
 
     HR_UUID = "00002a37-0000-1000-8000-00805f9b34fb"
@@ -45,13 +46,6 @@ TwentyfourBeatAvg = [0 for i in range(FinalSamples * 2)]
 log.setLevel(logging.INFO)
 log.info("Starting Script")
 
-if os.path.isfile('Config.conf'):
-    log.info("Found config file")
-else:
-    log.error("ERROR: Unable to find config file Config.conf, check the filename")
-    exit()
-
-
 class SimpleEcho(WebSocket):
 
     def handleMessage(self):
@@ -72,15 +66,18 @@ def parse_args():
     Command line argument parsing
     """
     parser = argparse.ArgumentParser(description="Bluetooth heart rate monitor data logger")
-    parser.add_argument("-m", metavar='MAC', type=str, help="MAC address of BLE device (default: auto-discovery)")
-    parser.add_argument("-b", action='store_true', help="Check battery level")
+    parser.add_argument("-mac", metavar='MAC', type=str, help="MAC address of BLE device (default: auto-discovery)")
+    parser.add_argument("-battery", action='store_true', help="Check battery level")
     parser.add_argument("-g", metavar='PATH', type=str, help="gatttool path (default: system available)",
                         default="gatttool")
     parser.add_argument("-H", metavar='HR_HANDLE', type=str,
                         help="Gatttool handle used for HR notifications (default: none)")
     parser.add_argument("-v", action='store_true', help="Verbose output")
     parser.add_argument("-d", action='store_true', help="Enable debug of gatttool")
-    parser.add_argument("-p", action='store_true', help="Set the port")
+    parser.add_argument("-port", action='store_true', help="Set the port")
+
+    if platform == "win32" or platform == "win64":
+        parser.add_argument("-s", action='store_true', help="Scan for bluetooth devices")
 
     confpath = os.path.join(os.path.dirname(os.path.realpath(__file__)), "Config.conf")
     if os.path.exists(confpath):
@@ -141,11 +138,11 @@ def cli():
 
     if platform == "linux" or platform == "linux2":
         log.info("Detected Platform Linux")
-        main_linux(args.m, args.g, args.b, args.H, args.d)
+        main_linux(args.mac, args.g, args.battery, args.H, args.d)
 
 
 def connect(loop):
-    loop.run_until_complete(main_windows(args.m))
+    loop.run_until_complete(main_windows(args.mac))
 
 
 async def main_windows(address=None):
@@ -420,6 +417,10 @@ def writeout(hr, hrv, bt, ct):
             ".{:4s}.{:1s}".format(str(bt), "1" if ct is True else "0") if hr is None else "{:4s}.{:8.4f}".format(
                 str(hr), hrv))
 
+async def searchbt():
+    devices = await discover()
+    for d in devices:
+        log.info(d)
 
 def http(webport):
     server = SimpleWebSocketServer('', webport, SimpleEcho)
@@ -430,49 +431,61 @@ if __name__ == "__main__":
 
     args = parse_args()
 
-    if args.g != "gatttool" and not os.path.exists(args.g):
-        log.critical("Couldn't find gatttool path!")
-        sys.exit(1)
-
-    # Increase verbose level
-    if args.v:
-        log.setLevel(logging.DEBUG)
-        log.info("Log level set to DEBUG")
-    else:
-        log.setLevel(logging.INFO)
-        log.info("Log Level set to INFOMATIVE")
-
-    hostname = socket.gethostname()
-    local_ip = socket.gethostbyname(hostname)
-
-    log.info("SimpleEcho Started ws://%s:%s" % (local_ip, args.p))
-
-    wthread = threading.Thread(target=http, args=(args.p,), daemon=True)
-    wthread.start()
-
-    if platform == "darwin":
-        log.info("Detected Platform Darwin - Unsupported - Terminating Process")
-        quit()
-    elif platform == "win32" or platform == "win64":
-        log.info("Detected Platform Windows - Experimental")
-        log.info("Connecting to " + args.m)
+    if args.s:
+        log.info("Starting bluetooth device scan")
         loop = asyncio.get_event_loop()
-        connect(loop)
-    elif platform == "linux" or platform == "linux2":
-        clithread = threading.Thread(target=cli, daemon=True)
-        clithread.start()
+        loop.run_until_complete(searchbt())
+    else:
 
-    while True:
-        time.sleep(10)
-        user_input = input("[Bluetooth Control]: ")
-
-        if user_input == "quit":
-            log.info("Exiting HRM")
-            exit(0)
-        elif user_input == "help":
-            log.info("System Commands")
-            log.info("---------------")
-            log.info("Quit - Exit the program and terminate process")
-            log.info("Help - Shows this help ")
+        if os.path.isfile('Config.conf'):
+            log.info("Found config file")
         else:
-            print("This is not a correct command.")
+            log.error("ERROR: Unable to find config file Config.conf, check the filename")
+            exit()
+
+        if args.g != "gatttool" and not os.path.exists(args.g):
+            log.critical("Couldn't find gatttool path!")
+            sys.exit(1)
+
+        # Increase verbose level
+        if args.v:
+            log.setLevel(logging.DEBUG)
+            log.info("Log level set to DEBUG")
+        else:
+            log.setLevel(logging.INFO)
+            log.info("Log Level set to INFOMATIVE")
+
+        hostname = socket.gethostname()
+        local_ip = socket.gethostbyname(hostname)
+
+        log.info("SimpleEcho Started ws://%s:%s" % (local_ip, args.port))
+
+        wthread = threading.Thread(target=http, args=(args.port,), daemon=True)
+        wthread.start()
+
+        if platform == "darwin":
+            log.info("Detected Platform Darwin - Unsupported - Terminating Process")
+            quit()
+        elif platform == "win32" or platform == "win64":
+            log.info("Detected Platform Windows - Experimental")
+            log.info("Connecting to " + args.mac)
+            loop = asyncio.get_event_loop()
+            connect(loop)
+        elif platform == "linux" or platform == "linux2":
+            clithread = threading.Thread(target=cli, daemon=True)
+            clithread.start()
+
+        while True:
+            time.sleep(10)
+            user_input = input("[Bluetooth Control]: ")
+
+            if user_input == "quit":
+                log.info("Exiting HRM")
+                exit(0)
+            elif user_input == "help":
+                log.info("System Commands")
+                log.info("---------------")
+                log.info("Quit - Exit the program and terminate process")
+                log.info("Help - Shows this help ")
+            else:
+                print("This is not a correct command.")

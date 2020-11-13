@@ -1,0 +1,4 @@
+SimpleWebSocketServer
+pexpect
+bleak
+asyncio

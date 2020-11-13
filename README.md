@@ -13,7 +13,7 @@ Polar H9 | --- |  [Amazon UK](https://www.amazon.co.uk/POLAR-Unisexs-Sensor-Blue
 Polar H10 | --- | [Amazon US](https://www.amazon.com/Polar-Heart-Rate-Monitor-Women/dp/B07PM54P4N/ref=sr_1_4?dchild=1&keywords=Polar+H9&sr=8-4) - [Amazon UK](https://www.amazon.co.uk/Polar-Monitor-Bluetooth-Waterproof-Sensor/dp/B07PM54P4N)
 
 ## Requirements
-* Python 3.6 Due to Bleak Requirements in Windows - Do not use versions higher
+* [Python 3.8.6](https://www.python.org/downloads/release/python-386/) Due to Bleak Requirements in Windows - Do not use versions higher
 * Pip
 * SimpleWebSocketServer
 * pexpect
@@ -24,15 +24,12 @@ Polar H10 | --- | [Amazon US](https://www.amazon.com/Polar-Heart-Rate-Monitor-Wo
 * Clone this repo: `git clone https://github.com/RaithSphere/NeosVR-HRM`
 * Attach the HRM to its strap and put it on.
 * Ensure no other applications or devices are connected (listening) to the HRM.
-* Run the command "python -m pip install -r requirements.txt" - If you are using Linux make sure its Python 3.6 the command is linked to
-* If your using windows please check the windows only section before proceeding
-* Scan for your device MAC Address using discover.py (Windows Only).
+* Scan for your device MAC Address using **python HRM.py -s** (Windows Only).
+* For Linux - Run the command "python -m pip install -r requirements.txt"
+* For Windows - Run the command "python -m pip install -r win-requirements.txt"
 * Add your MAC Address to Config.example and rename to Config.conf
 * Start the script by doing **python3 HRM.py** or **python HRM.py**
 
-## Windows Only
-In addition to the above you will also need to run the command
-* python -m pip install bleak asyncio
 
 ## Config File
 In the config file you need to set port & Bluetooth MAC, 
