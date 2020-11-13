@@ -2,7 +2,6 @@
 *.pyc
 *.pyo
 *.db
-HeartRateLogger.conf
 hrbt.txt
 Config.conf
 /.idea
