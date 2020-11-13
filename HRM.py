@@ -220,6 +220,7 @@ def main_linux(addr=None, gatttool="gatttool", check_battery=False, hr_handle=No
     """
     hr_ctl_handle = None
     retry = True
+    global ct, bt
     while retry:
 
         while 1:
@@ -257,7 +258,7 @@ def main_linux(addr=None, gatttool="gatttool", check_battery=False, hr_handle=No
                 gt.expect("value: ([0-9a-f]+)")
                 battery_level = gt.match.group(1)
                 log.info("Battery level: " + str(int(battery_level, 16)))
-                battery = str(int(battery_level, 16))
+                bt = str(int(battery_level, 16))
             except pexpect.TIMEOUT:
                 log.error("Couldn't read battery level.")
 
@@ -330,8 +331,6 @@ def main_linux(addr=None, gatttool="gatttool", check_battery=False, hr_handle=No
             res = interpret(list(data))
 
             log.debug(res)
-
-            global ct, bt
             writeout(None, None, bt, ct)
 
     # We quit close the BLE connection properly
