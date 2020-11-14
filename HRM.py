@@ -418,11 +418,16 @@ async def searchbt():
 
     """ Ignore HTC or Unknown Devices """
     Devicelist = ["HTC", "Unknown", "Apple", "Google"]
+    KnownDevices = ["808S", "Polar", "XOSS"]
 
     for d in devices:
         dx = str(d)
         if not any(x in dx for x in Devicelist):
-            log.info(dx)
+
+            if any(x in dx for x in KnownDevices):
+                log.info("\033[92mPossible Tracker: %s \033[0m", dx)
+            else:
+                log.info(dx)
 
 
 def http(webport):
