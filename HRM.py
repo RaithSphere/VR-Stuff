@@ -415,8 +415,14 @@ def writeout(hr, hrv, battery, contact):
 
 async def searchbt():
     devices = await discover()
+
+    """ Ignore HTC or Unknown Devices """
+    Devicelist = ["HTC", "Unknown", "Apple", "Google"]
+
     for d in devices:
-        log.info(d)
+        dx = str(d)
+        if not any(x in dx for x in Devicelist):
+            log.info(dx)
 
 
 def http(webport):
