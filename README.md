@@ -6,8 +6,6 @@
 `NeosVR-HRM` should support any devices that use the service UUID "180d" and with characteristic "2a37", below is a list of known working devices that have been tested
 <BR><B>Supported OS</B>: Windows and Linux - *(This code has been tested on a Raspberry Pi Zero W and confirmed working with that)*
 
-## Chest Mounted
-
 HRV = Heart Rate Varibility, CT = Contact Tracking
 
 Device | US Link | UK Link | HR | CT | HRV | Placement
