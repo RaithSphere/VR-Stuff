@@ -51,6 +51,9 @@ Connection Status will return either 0 or 1, 1 being the sensor has a connection
 # Contributions
 If you want to Contribute please feel free to fork this repo
 
+# Support
+If you are having any issue's you can contact me on the Neos Official Discord RaithSphere#2701
+
 # Thanks and Other Stuff
 Ryuvi for the Initial idea, websocket code and HRV
 <BR>3x1t_5tyl3, Goodvibes and MattyK for being the initial testers.
