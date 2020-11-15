@@ -31,11 +31,11 @@ Action Free Arm Heart Rate Monitor | [Ali Express](https://www.aliexpress.com/it
 # Instructions
 * Download the latest release source code - [Here](https://github.com/RaithSphere/NeosVR-HRM/releases) or Clone this repo: `git clone https://github.com/RaithSphere/NeosVR-HRM`
 * **When installing Python make sure to check Add Python to Path**
+* For Linux - Run the command "python -m pip install -r requirements.txt"
+* For Windows - Run the command "python -m pip install -r win-requirements.txt"
 * Attach the HRM to its strap and put it on.
 * Ensure no other applications or devices are connected (listening) to the HRM.
 * Scan for your device MAC Address using **python HRM.py -s** (Windows Only).
-* For Linux - Run the command "python -m pip install -r requirements.txt"
-* For Windows - Run the command "python -m pip install -r win-requirements.txt"
 * Add your MAC Address to Config.example and rename to Config.conf
 * Start the script by doing **python3 HRM.py** (Linux) or **python HRM.py** (Windows)
 
