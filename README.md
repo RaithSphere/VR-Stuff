@@ -29,7 +29,8 @@ Action Free Arm Heart Rate Monitor | [Ali Express](https://www.aliexpress.com/it
 * asyncio - Windows Only
 
 # Instructions
-* Clone this repo: `git clone https://github.com/RaithSphere/NeosVR-HRM`
+* Download the latest release source code - [Here](https://github.com/RaithSphere/NeosVR-HRM/releases) or Clone this repo: `git clone https://github.com/RaithSphere/NeosVR-HRM`
+* **When installing Python make sure to check Add Python to Path**
 * Attach the HRM to its strap and put it on.
 * Ensure no other applications or devices are connected (listening) to the HRM.
 * Scan for your device MAC Address using **python HRM.py -s** (Windows Only).
