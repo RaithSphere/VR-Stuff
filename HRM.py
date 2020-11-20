@@ -78,6 +78,7 @@ def parse_args():
     parser.add_argument("-d", action='store_true', help="Enable debug of gatttool")
     parser.add_argument("-port", action='store_true', help="Set the port")
     parser.add_argument("-s", action='store_true', help="Scan for bluetooth devices - Windows only")
+    parser.add_argument("-a", action='store_true', help='Get List of services - Windows Only')
 
     confpath = os.path.join(os.path.dirname(os.path.realpath(__file__)), "Config.conf")
     if os.path.exists(confpath):
@@ -430,6 +431,39 @@ async def searchbt():
                 log.info(dx)
 
 
+async def getservices(address: str):
+    async with BleakClient(address) as client:
+        x = await client.is_connected()
+        log.info("Connected: {0}".format(x))
+
+        for service in client.services:
+            log.info("[Service] {0}: {1}".format(service.uuid, service.description))
+            for char in service.characteristics:
+                if "read" in char.properties:
+                    try:
+                        value = bytes(await client.read_gatt_char(char.uuid))
+                    except Exception as e:
+                        value = str(e).encode()
+                else:
+                    value = None
+                log.info(
+                    "\t[Characteristic] {0}: (Handle: {1}) ({2}) | Name: {3}, Value: {4} ".format(
+                        char.uuid,
+                        char.handle,
+                        ",".join(char.properties),
+                        char.description,
+                        value,
+                    )
+                )
+                for descriptor in char.descriptors:
+                    value = await client.read_gatt_descriptor(descriptor.handle)
+                    log.info(
+                        "\t\t[Descriptor] {0}: (Handle: {1}) | Value: {2} ".format(
+                            descriptor.uuid, descriptor.handle, bytes(value)
+                        )
+                    )
+
+
 def http(webport):
     server = SimpleWebSocketServer('', webport, SimpleEcho)
     server.serveforever()
@@ -443,6 +477,10 @@ if __name__ == "__main__":
         log.info("Starting bluetooth device scan")
         loop = asyncio.get_event_loop()
         loop.run_until_complete(searchbt())
+    elif args.a and platform == "win32" or platform == "win64":
+        log.info("Getting Bluetooth Services list for %s" % args.mac)
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(getservices(args.mac))
     else:
 
         if os.path.isfile('Config.conf'):
