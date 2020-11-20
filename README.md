@@ -17,7 +17,8 @@ CooSpo Heart Rate Monitor | --- | [Amazon UK](https://www.amazon.co.uk/CooSpo-Mo
 Polar H9 | [Amazon US](https://www.amazon.com/POLAR-H9-Heart-Rate-Sensor/dp/B08GHH4ZKL) |  [Amazon UK](https://www.amazon.co.uk/POLAR-Unisexs-Sensor-Bluetooth-Waterproof-Monitor/dp/B08411DQ96) | ✔️ | ✔️ | ✔️ | Chest
 Polar H10 | [Amazon US](https://www.amazon.com/Polar-Heart-Rate-Monitor-Women/dp/B07PM54P4N/ref=sr_1_4?dchild=1&keywords=Polar+H9&sr=8-4) | [Amazon UK](https://www.amazon.co.uk/Polar-Monitor-Bluetooth-Waterproof-Sensor/dp/B07PM54P4N) | ✔️ | ✔️ | ✔️ | Chest
 XOSS Heart Rate Monitor | [Amazon US](https://www.amazon.com/XOSS-Optical-Bluetooth-Wireless-Accessories/dp/B07H3QN6JC/ref=sr_1_13?dchild=1&keywords=XOSS&qid=1605379692&sr=8-13) | [Amazon UK](https://www.amazon.co.uk/XOSS-Monitor-Bluetooth-Smart-phone-Computer/dp/B07QLQM5VG/ref=sr_1_8?dchild=1&keywords=Xoss&qid=1605379649&sr=8-8) | ✔️ | ❌ | ❌ | Wrist
-Action Free Arm Heart Rate Monitor | [Ali Express](https://www.aliexpress.com/item/4000900323749.html) | [Ali Express](https://www.aliexpress.com/item/4000900323749.html) | ✔️ | ❌ | ❌ | Arm
+Action Free Arm Heart Rate Monitor | [Ali Express](https://www.aliexpress.com/item/4000900323749.html) | [Ali Express](https://www.aliexpress.com/item/4000900323749.html) | ✔️ | ✔️ | ❌ | Arm
+Wellue VisualBeat | [Amazon US](https://www.amazon.com/Wellue-VisualBeat-Bluetooth-Exercise-Waterproof/dp/B07Y744XM8) | --- | ✔️ | ❌ | ❌ | Chest
 
 
 # Requirements
