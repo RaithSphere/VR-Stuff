@@ -6,6 +6,8 @@
 `NeosVR-HRM` should support any devices that use the service UUID "180d" and with characteristic "2a37", below is a list of known working devices that have been tested
 <BR><B>Supported OS</B>: Windows and Linux - *(This code has been tested on a Raspberry Pi Zero W and confirmed working with that)*
   
+Windows is Classified as Experimental due to issues with the way windows handles bluetooth rather poorly, a new way is being researched
+  
 For bluetooth if your PC lacks it I personally recommend the TP-LINK UB4A/UB400 [Amazon UK](https://www.amazon.co.uk/TP-LINK-UB4A-Bluetooth-Computer-Receiver/dp/B07YLDVM6B/) or [Amazon US](https://www.amazon.com/TP-Link-Bluetooth-Receiver-Controllers-UB400/dp/B07V1SZCY6/)
 
 HRV = Heart Rate Varibility, CT = Contact Tracking
