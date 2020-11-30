@@ -542,6 +542,7 @@ if __name__ == "__main__":
         local_ip = socket.gethostbyname(hostname)
 
         log.info("SimpleEcho Started ws://%s:%s" % (local_ip, args.port))
+        log.info("\33[1m\33[94mNotice if you are running this locally on the same PC as NeosVR Connect to ws://localhost:%s\33[0m" % args.port)
 
         wthread = threading.Thread(target=http, args=(args.port,), daemon=True)
         wthread.start()
