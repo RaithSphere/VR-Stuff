@@ -20,7 +20,7 @@ from sys import platform
 import pexpect
 from SimpleWebSocketServer import SimpleWebSocketServer, WebSocket
 
-# For windows we are using BleakClient 
+# For windows we are using BleakClient
 if platform == "win32" or platform == "win64":
     from bleak import BleakClient
     from bleak import discover
@@ -49,7 +49,6 @@ log.info("Starting Script")
 
 
 class SimpleEcho(WebSocket):
-
     def handleMessage(self):
         hrbt = open("hrbt.txt", "r")
         data = hrbt.read()
@@ -57,28 +56,48 @@ class SimpleEcho(WebSocket):
         hrbt.close()
 
     def handleConnected(self):
-        print(self.address, 'connected')
+        print(self.address, "connected")
 
     def handleClose(self):
-        print(self.address, 'closed')
+        print(self.address, "closed")
 
 
 def parse_args():
     """
     Command line argument parsing
     """
-    parser = argparse.ArgumentParser(description="Bluetooth heart rate monitor data logger")
-    parser.add_argument("-mac", metavar='MAC', type=str, help="MAC address of BLE device (default: auto-discovery)")
-    parser.add_argument("-battery", action='store_true', help="Check battery level")
-    parser.add_argument("-g", metavar='PATH', type=str, help="gatttool path (default: system available)",
-                        default="gatttool")
-    parser.add_argument("-H", metavar='HR_HANDLE', type=str,
-                        help="Gatttool handle used for HR notifications (default: none)")
-    parser.add_argument("-v", action='store_true', help="Verbose output")
-    parser.add_argument("-d", action='store_true', help="Enable debug of gatttool")
-    parser.add_argument("-port", action='store_true', help="Set the port")
-    parser.add_argument("-s", action='store_true', help="Scan for bluetooth devices - Windows only")
-    parser.add_argument("-a", action='store_true', help='Get List of services - Windows Only')
+    parser = argparse.ArgumentParser(
+        description="Bluetooth heart rate monitor data logger"
+    )
+    parser.add_argument(
+        "-mac",
+        metavar="MAC",
+        type=str,
+        help="MAC address of BLE device (default: auto-discovery)",
+    )
+    parser.add_argument("-battery", action="store_true", help="Check battery level")
+    parser.add_argument(
+        "-g",
+        metavar="PATH",
+        type=str,
+        help="gatttool path (default: system available)",
+        default="gatttool",
+    )
+    parser.add_argument(
+        "-H",
+        metavar="HR_HANDLE",
+        type=str,
+        help="Gatttool handle used for HR notifications (default: none)",
+    )
+    parser.add_argument("-v", action="store_true", help="Verbose output")
+    parser.add_argument("-d", action="store_true", help="Enable debug of gatttool")
+    parser.add_argument("-port", action="store_true", help="Set the port")
+    parser.add_argument(
+        "-s", action="store_true", help="Scan for bluetooth devices - Windows only"
+    )
+    parser.add_argument(
+        "-a", action="store_true", help="Get List of services - Windows Only"
+    )
 
     confpath = os.path.join(os.path.dirname(os.path.realpath(__file__)), "Config.conf")
     if os.path.exists(confpath):
@@ -207,7 +226,11 @@ def processhr(s, d):
         global RRAvg
         for i in range(FinalSamples):
             n = i * 2
-            nextn = TwentyfourBeatAvg[n + 1] if TwentyfourBeatAvg[n + 1] != 0 else TwentyfourBeatAvg[n]
+            nextn = (
+                TwentyfourBeatAvg[n + 1]
+                if TwentyfourBeatAvg[n + 1] != 0
+                else TwentyfourBeatAvg[n]
+            )
             RRAvg[i] = pow(TwentyfourBeatAvg[n] - nextn, 2)
 
         HRV = math.sqrt(statistics.mean(RRAvg))
@@ -215,7 +238,13 @@ def processhr(s, d):
     writeout(res["hr"], HRV, None, None)
 
 
-def main_linux(addr=None, gatttool="gatttool", check_battery=False, hr_handle=None, debug_gatttool=False):
+def main_linux(
+    addr=None,
+    gatttool="gatttool",
+    check_battery=False,
+    hr_handle=None,
+    debug_gatttool=False,
+):
     """
     main routine to which orchestrates everything
     """
@@ -270,8 +299,9 @@ def main_linux(addr=None, gatttool="gatttool", check_battery=False, hr_handle=No
 
             while 1:
                 try:
-                    gt.expect(r"handle: (0x[0-9a-f]+), uuid: ([0-9a-f]{8})",
-                              timeout=60)  # Had to increase the timeout from 10 for Wahoo Tickr X
+                    gt.expect(
+                        r"handle: (0x[0-9a-f]+), uuid: ([0-9a-f]{8})", timeout=60
+                    )  # Had to increase the timeout from 10 for Wahoo Tickr X
                 except pexpect.TIMEOUT:
                     break
                 handle = gt.match.group(1).decode()
@@ -296,7 +326,7 @@ def main_linux(addr=None, gatttool="gatttool", check_battery=False, hr_handle=No
             gt.sendline("char-write-req " + hr_ctl_handle + " 0100")
 
         # Time period between two measures. This will be updated automatically.
-        period = 1.
+        period = 1.0
         last_measure = time.time() - period
         hr_expect = "Notification handle = " + hr_handle + " value: ([0-9a-f ]+)"
 
@@ -323,12 +353,12 @@ def main_linux(addr=None, gatttool="gatttool", check_battery=False, hr_handle=No
             # sometimes sends a small burst, we have a simple low-pass filter
             # to smooth the measure.
             tmeasure = time.time()
-            period = period + 1 / 16. * ((tmeasure - last_measure) - period)
+            period = period + 1 / 16.0 * ((tmeasure - last_measure) - period)
             last_measure = tmeasure
 
             # Get data from gatttool
             datahex = gt.match.group(1).strip()
-            data = map(lambda x: int(x, 16), datahex.split(b' '))
+            data = map(lambda x: int(x, 16), datahex.split(b" "))
             res = interpret(list(data))
 
             log.debug(res)
@@ -392,7 +422,11 @@ def interpret(data):
         global RRAvg
         for i in range(FinalSamples):
             n = i * 2
-            nextn = TwentyfourBeatAvg[n + 1] if TwentyfourBeatAvg[n + 1] != 0 else TwentyfourBeatAvg[n]
+            nextn = (
+                TwentyfourBeatAvg[n + 1]
+                if TwentyfourBeatAvg[n + 1] != 0
+                else TwentyfourBeatAvg[n]
+            )
             RRAvg[i] = pow(TwentyfourBeatAvg[n] - nextn, 2)
         HRV = math.sqrt(statistics.mean(RRAvg))
 
@@ -409,9 +443,10 @@ def writeout(hr, hrv, battery, contact):
     else:
         datafile.seek(13 if hr is None else 0)
         datafile.write(
-            ".{:4s}.{:1s}".format(str(battery),
-                                  "1" if contact is True else "0") if hr is None else "{:4s}.{:8.4f}".format(
-                str(hr), hrv))
+            ".{:4s}.{:1s}".format(str(battery), "1" if contact is True else "0")
+            if hr is None
+            else "{:4s}.{:8.4f}".format(str(hr), hrv)
+        )
 
 
 async def searchbt():
@@ -465,7 +500,7 @@ async def getservices(address: str):
 
 
 def http(webport):
-    server = SimpleWebSocketServer('', webport, SimpleEcho)
+    server = SimpleWebSocketServer("", webport, SimpleEcho)
     server.serveforever()
 
 
@@ -483,10 +518,12 @@ if __name__ == "__main__":
         loop.run_until_complete(getservices(args.mac))
     else:
 
-        if os.path.isfile('Config.conf'):
+        if os.path.isfile("Config.conf"):
             log.info("Found config file")
         else:
-            log.error("ERROR: Unable to find config file Config.conf, check the filename")
+            log.error(
+                "ERROR: Unable to find config file Config.conf, check the filename"
+            )
             exit()
 
         if args.g != "gatttool" and not os.path.exists(args.g):
