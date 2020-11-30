@@ -1,4 +1,4 @@
-# NeosVR Heartrate Monitor
+# NeosVR Heartrate Monitor [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 `NeosVR-HRM` is a Python script that listens to data from Bluetooth Low Energy (BLE) heart rate sensors 
 
