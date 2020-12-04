@@ -2,7 +2,6 @@ from SimpleWebSocketServer import SimpleWebSocketServer, WebSocket
 
 
 class SimpleEcho(WebSocket):
-
     def handleMessage(self):
         print(self.data)
         file = self.data
@@ -11,13 +10,12 @@ class SimpleEcho(WebSocket):
         self.sendMessage(data)
         textfile.close()
 
-
     def handleConnected(self):
-        print(self.address, 'connected')
+        print(self.address, "connected")
 
     def handleClose(self):
-        print(self.address, 'closed')
+        print(self.address, "closed")
 
 
-server = SimpleWebSocketServer('', 8123, SimpleEcho)
+server = SimpleWebSocketServer("", 8123, SimpleEcho)
 server.serveforever()
