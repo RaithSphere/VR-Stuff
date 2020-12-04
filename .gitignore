@@ -2,7 +2,7 @@
 *.pyc
 *.pyo
 *.db
-hrbt.txt
-Config.conf
+storage/hrbt.txt
+HRM/Config.conf
 /.idea
 /venv/

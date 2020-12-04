@@ -29,7 +29,7 @@ if platform == "win32" or platform == "win64":
     HR_UUID = "00002a37-0000-1000-8000-00805f9b34fb"
     BT_UUID = "00002a19-0000-1000-8000-00805f9b34fb"
 
-datafile = open("hrbt.txt", "w")
+datafile = open("../storage/hrbt.txt", "w")
 
 logging.basicConfig(format="%(asctime)-15s  %(message)s")
 log = logging.getLogger("HeartRateLogger")
@@ -50,7 +50,7 @@ log.info("Starting Script")
 
 class SimpleEcho(WebSocket):
     def handleMessage(self):
-        hrbt = open("hrbt.txt", "r")
+        hrbt = open("../storage/hrbt.txt", "r")
         data = hrbt.read()
         self.sendMessage(data)
         hrbt.close()

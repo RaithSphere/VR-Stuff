@@ -18,7 +18,7 @@ def to_percent(value):
 
 
 def writefile(left, right):
-    datafile = open("../ovr.txt", "w")
+    datafile = open("../storage/ovr.txt", "w")
     left = to_percent(left)
     right = to_percent(right)
     datafile.write("{:2s}.{:2s}".format(str(left), str(right)))
