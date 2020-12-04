@@ -32,7 +32,7 @@ Wellue VisualBeat | [Amazon US](https://www.amazon.com/Wellue-VisualBeat-Bluetoo
 * asyncio - Windows Only
 
 # Instructions
-* Download the latest release source code - [Here](https://github.com/RaithSphere/NeosVR-HRM/releases) or Clone this repo: `git clone https://github.com/RaithSphere/NeosVR-HRM`
+* Download the latest release source code - [Here](https://github.com/RaithSphere/NeosVR-Stuff/releases) or Clone this repo: `git clone https://github.com/RaithSphere/NeosVR-Stuff`
 * **When installing Python make sure to check Add Python to Path**
 * For Linux - Run the command "python -m pip install -r requirements.txt"
 * For Windows - Run the command "python -m pip install -r win-requirements.txt"
