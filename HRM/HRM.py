@@ -168,7 +168,7 @@ def connect(windows):
 
 async def main_windows(address=None):
     async with BleakClient(address) as client:
-        log.info("Connected, steaming data...")
+        log.info("Connected, streaming data...")
 
         await client.start_notify(HR_UUID, processhr)
 
