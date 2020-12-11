@@ -22,6 +22,7 @@ XOSS Heart Rate Monitor | [Amazon US](https://www.amazon.com/XOSS-Optical-Blueto
 Action Free Arm Heart Rate Monitor | [Ali Express](https://www.aliexpress.com/item/4000900323749.html) | [Ali Express](https://www.aliexpress.com/item/4000900323749.html) | ✔️ | ✔️ | ❌ | Arm
 Wellue VisualBeat | [Amazon US](https://www.amazon.com/Wellue-VisualBeat-Bluetooth-Exercise-Waterproof/dp/B07Y744XM8) | --- | ✔️ | ❌ | ❌ | Chest
 
+Video guide on python setup can be found here https://www.youtube.com/watch?v=aTiyrFsqIA4
 
 # Requirements
 * [Python 3.8.6](https://www.python.org/downloads/release/python-386/) Due to Bleak Requirements in Windows - Do not use versions higher
