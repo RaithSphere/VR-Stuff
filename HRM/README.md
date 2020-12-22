@@ -72,5 +72,5 @@ Ryuvi for the Initial idea, websocket code and HRV
 <BR>Carte Noir for the coffee for keeping me going
 
 # License
-Copyright 2018 Christopher Brown.
-[MIT Licensed](https://chbrown.github.io/licenses/MIT/#2018).
+Copyright 2020 RaithSphere.
+[MIT Licensed](https://github.com/RaithSphere/NeosVR-Stuff/blob/main/HRM/LICENSE).
