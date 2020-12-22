@@ -21,6 +21,7 @@ Polar H10 | [Amazon US](https://www.amazon.com/Polar-Heart-Rate-Monitor-Women/dp
 XOSS Heart Rate Monitor | [Amazon US](https://www.amazon.com/XOSS-Optical-Bluetooth-Wireless-Accessories/dp/B07H3QN6JC/ref=sr_1_13?dchild=1&keywords=XOSS&qid=1605379692&sr=8-13) | [Amazon UK](https://www.amazon.co.uk/XOSS-Monitor-Bluetooth-Smart-phone-Computer/dp/B07QLQM5VG/ref=sr_1_8?dchild=1&keywords=Xoss&qid=1605379649&sr=8-8) | ✔️ | ❌ | ❌ | Wrist
 Action Free Arm Heart Rate Monitor | [Ali Express](https://www.aliexpress.com/item/4000900323749.html) | [Ali Express](https://www.aliexpress.com/item/4000900323749.html) | ✔️ | ✔️ | ❌ | Arm
 Wellue VisualBeat | [Amazon US](https://www.amazon.com/Wellue-VisualBeat-Bluetooth-Exercise-Waterproof/dp/B07Y744XM8) | --- | ✔️ | ❌ | ❌ | Chest
+Megene - H64 | [AliExpress](https://www.aliexpress.com/item/1005001484047949.html?spm=a2g0s.9042311.0.0.51fa4c4di3HBjE) | [AliExpress](https://www.aliexpress.com/item/1005001484047949.html?spm=a2g0s.9042311.0.0.51fa4c4di3HBjE) | ✔️ | ❌ | ❌| Chest
 
 Video guide on python setup can be found here https://www.youtube.com/watch?v=aTiyrFsqIA4
 
