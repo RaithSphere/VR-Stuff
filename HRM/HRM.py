@@ -41,6 +41,7 @@ HRV = 0
 RRAvg = [0 for i in range(FinalSamples)]
 bt = -1
 ct = False
+connected = False
 
 TwentyfourBeatAvg = [0 for i in range(FinalSamples * 2)]
 
@@ -163,6 +164,7 @@ def cli():
 
 
 def connect(windows):
+    connected = True
     windows.run_until_complete(main_windows(args.mac))
 
 
@@ -239,18 +241,18 @@ def processhr(s, d):
 
 
 def main_linux(
-    addr=None,
-    gatttool="gatttool",
-    check_battery=False,
-    hr_handle=None,
-    debug_gatttool=False,
+        addr=None,
+        gatttool="gatttool",
+        check_battery=False,
+        hr_handle=None,
+        debug_gatttool=False,
 ):
     """
     main routine to which orchestrates everything
     """
     hr_ctl_handle = None
     retry = True
-    global ct, bt
+    global ct, bt, gt
     while retry:
 
         while 1:
@@ -378,8 +380,7 @@ def interpret(data):
     """
 
     byte0 = data[0]
-    res = {}
-    res["hrv_uint8"] = (byte0 & 1) == 0
+    res = {"hrv_uint8": (byte0 & 1) == 0}
     sensor_contact = (byte0 >> 1) & 3
 
     global ct
@@ -542,7 +543,8 @@ if __name__ == "__main__":
         local_ip = socket.gethostbyname(hostname)
 
         log.info("SimpleEcho Started ws://%s:%s" % (local_ip, args.port))
-        log.info("\33[1m\33[94mNotice if you are running this locally on the same PC as NeosVR Connect to ws://localhost:%s\33[0m" % args.port)
+        log.info(
+            "\33[1m\33[94mNotice if you are running this locally on the same PC as NeosVR Connect to ws://localhost:%s\33[0m" % args.port)
 
         wthread = threading.Thread(target=http, args=(args.port,), daemon=True)
         wthread.start()
@@ -554,7 +556,15 @@ if __name__ == "__main__":
             log.info("Detected Platform Windows - Experimental")
             log.info("Connecting to " + args.mac)
             loop = asyncio.get_event_loop()
-            connect(loop)
+            while not connected:
+                try:
+                    connect(loop)
+                except KeyboardInterrupt:
+                    print("Ending...")
+                    datafile.close()
+                    break
+                except Exception as e:
+                    print(e)
         elif platform == "linux" or platform == "linux2":
             clithread = threading.Thread(target=cli, daemon=True)
             clithread.start()
