@@ -40,8 +40,9 @@ Video guide on python setup can be found here https://www.youtube.com/watch?v=aT
 * For Windows - Run the command "python -m pip install -r win-requirements.txt"
 * Attach the HRM to its strap and put it on.
 * Ensure no other applications or devices are connected (listening) to the HRM.
+* Before you scan you need to rename Config.example to Config.conf
 * Scan for your device MAC Address using **python HRM.py -s** (Windows Only).
-* Add your MAC Address to Config.example and rename to Config.conf
+* Add your MAC Address to Config.conf
 * Start the script by doing **python3 HRM.py** (Linux) or **python HRM.py** (Windows)
 
 
