@@ -20,10 +20,12 @@ def loadwhitelist():
 class SimpleEcho(WebSocket):
 
     def handleMessage(self):
+        print("Looking for whitelist %s" % self.data)
         global data
         loadwhitelist()
 
         filename = self.data.rsplit('\\', 1)[-1]
+        print("Looking for whitelist %s" % self.data)
 
         if filename in data['whitelist']:
             print(self.data)
