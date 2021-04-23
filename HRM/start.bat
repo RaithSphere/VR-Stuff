@@ -1,6 +1,5 @@
 @if (@CodeSection == @Batch) @then
 
-
 @echo off
 setlocal EnableDelayedExpansion
 
