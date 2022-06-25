@@ -1,18 +1,15 @@
 ﻿using System;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading;
-using Windows.Devices.Bluetooth.GenericAttributeProfile;
-using Windows.Devices.Enumeration;
-using Windows.Storage.Streams;
+using System.Net.Sockets;
+using System.Net;
+using System;
 
 namespace HeartRate
 {
     internal class NeosVR
     {
-        internal static void SendData(int bpm, ContactSensorStatus status)
+        internal static void SendData(int bpm, ContactSensorStatus status, int[] rr)
         {
             byte[] dataBytes = Encoding.UTF8.GetBytes(bpm.ToString());
 
@@ -20,7 +17,7 @@ namespace HeartRate
 
             int connection = Convert.ToInt32(isDisconnected);
 
-            Debug.WriteLine($"NeosVR - {bpm}.00000000.0000.{connection}");
+            Debug.WriteLine($"NeosVR - {bpm,-4:D}.{rr[0],8:##0.0000}.0000.{connection}");
 
         }
     }

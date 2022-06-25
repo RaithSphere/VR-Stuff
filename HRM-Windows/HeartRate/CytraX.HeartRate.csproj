@@ -44,13 +44,20 @@
   <PropertyGroup>
     <GenerateManifests>false</GenerateManifests>
   </PropertyGroup>
-  <PropertyGroup>
-    <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
-  </PropertyGroup>
+  <PropertyGroup />
   <PropertyGroup>
     <ApplicationIcon>paomedia_small-n-flat_heart_iconfinder_299063.ico</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup />
+  <PropertyGroup />
+  <PropertyGroup />
+  <PropertyGroup />
+  <PropertyGroup />
+  <PropertyGroup />
   <ItemGroup>
+    <Reference Include="Ninja.WebSockets, Version=1.0.1.8, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ninja.WebSockets.1.1.8\lib\net45\Ninja.WebSockets.dll</HintPath>
+    </Reference>
     <Reference Include="platform">
       <HintPath>$(MSBuildProjectDirectory)\windows-sdk\platform.winmd</HintPath>
     </Reference>
@@ -70,7 +77,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CytraX.WS.cs" />
     <Compile Include="DateTimeFormatter.cs" />
+    <Compile Include="DebugLog.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="FileWriters.cs" />
     <Compile Include="HeartRateForm.cs">
@@ -82,7 +91,6 @@
     <Compile Include="HeartRateService.cs" />
     <Compile Include="HeartRateServiceWatchdog.cs" />
     <Compile Include="HeartRateSettings.cs" />
-    <Compile Include="NeosHandler.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Prompt.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -101,6 +109,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <None Include="packages.config" />
     <None Include="Properties\app.manifest" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
