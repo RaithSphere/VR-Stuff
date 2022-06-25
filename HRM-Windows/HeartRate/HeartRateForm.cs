@@ -158,6 +158,29 @@ public partial class HeartRateForm : Form
         }
     }
 
+
+    private List<decimal> rrIntervals = new List<decimal>();
+
+    public decimal HeartRateVariance { get; private set; }
+
+    private decimal CalculateHRV()
+    {
+        var count = 0;
+        var sum = 0.0;
+        var time = 0.0;
+
+        for (var i = rrIntervals.Count - 1; i > 0 && time < 30.0; --i)
+        {
+            time += (double)rrIntervals[i];
+            var diff = (double)(rrIntervals[i] - rrIntervals[i - 1]);
+            sum += diff * diff;
+            ++count;
+        }
+
+        if (count < 2) return 0M;
+        return decimal.Round((decimal)Math.Sqrt((double)(sum / count)) * 1000M, 4);
+    }
+
     private void Service_HeartRateUpdatedCore(HeartRateReading reading)
     {
         _log?.Reading(reading);
@@ -169,15 +192,33 @@ public partial class HeartRateForm : Form
         var status = reading.Status;
         var HRV = reading.RRIntervals;
 
-
-        var HeartRateVariability = "0";
+        decimal HeartRateVariability = 0;
         var BatteryPercent = "0";
         bool isConnected = true;
 
+        var pos = 0;
+
+        var data = reading.RRIntervals;
+
+        if (data != null)
+        { 
+            while (pos < data.Length)
+            {
+                var interval = data[pos] / 1024M;
+                pos += 1;
+                rrIntervals.Add(interval);
+            }
+            if (rrIntervals.Count > 1024)
+            {
+                rrIntervals.RemoveRange(0, 256);
+            }
+            HeartRateVariance = CalculateHRV();
+        }
+
         if (HRV == null || HRV.Length == 0)
-            WebSocketComponent.SendMessage(hrmData = ($"{bpm,-4:D}.{HeartRateVariability,8:##0.0000}.{BatteryPercent,-4:D}.") + (isConnected ? "1" : "0"));
+            WebSocketComponent.SendMessage(hrmData = ($"{bpm,-4:D}.{HeartRateVariance,8:##0.0000}.{BatteryPercent,-4:D}.") + (isConnected ? "1" : "0"));
         else
-            WebSocketComponent.SendMessage(hrmData = ($"{bpm,-4:D}.{HRV[0],8:##0.0000}.{BatteryPercent,-4:D}.") + (isConnected ? "1" : "0"));
+            WebSocketComponent.SendMessage(hrmData = ($"{bpm,-4:D}.{HeartRateVariance,8:##0.0000}.{BatteryPercent,-4:D}.") + (isConnected ? "1" : "0"));
 
         var isDisconnected = bpm == 0 ||
             status == ContactSensorStatus.NoContact;
@@ -190,7 +231,7 @@ public partial class HeartRateForm : Form
         }
         else
         {
-            iconText = $"{bpm} beats per min\nHRV: {HRV[0]}";
+            iconText = $"{bpm} beats per min\nHRV: {HeartRateVariance}";
         }
 
 
