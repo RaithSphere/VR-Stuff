@@ -179,7 +179,8 @@ public partial class HeartRateForm : Form
 
         if (count < 2) return 0M;
         return decimal.Round((decimal)Math.Sqrt((double)(sum / count)) * 1000M, 4);
-    }
+
+}
 
     private void Service_HeartRateUpdatedCore(HeartRateReading reading)
     {
