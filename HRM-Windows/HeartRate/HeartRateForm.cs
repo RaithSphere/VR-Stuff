@@ -192,8 +192,6 @@ public partial class HeartRateForm : Form
         var bpm = reading.BeatsPerMinute;
         var status = reading.Status;
         var HRV = reading.RRIntervals;
-
-        decimal HeartRateVariability = 0;
         var BatteryPercent = "0";
         bool isConnected = true;
 
@@ -217,9 +215,13 @@ public partial class HeartRateForm : Form
         }
 
         if (HRV == null || HRV.Length == 0)
+        {
             WebSocketComponent.SendMessage(hrmData = ($"{bpm,-4:D}.{HeartRateVariance,8:##0.0000}.{BatteryPercent,-4:D}.") + (isConnected ? "1" : "0"));
+        }
         else
+        {
             WebSocketComponent.SendMessage(hrmData = ($"{bpm,-4:D}.{HeartRateVariance,8:##0.0000}.{BatteryPercent,-4:D}.") + (isConnected ? "1" : "0"));
+        }
 
         var isDisconnected = bpm == 0 ||
             status == ContactSensorStatus.NoContact;
