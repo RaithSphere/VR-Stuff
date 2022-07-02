@@ -14,7 +14,7 @@ If you are having any issue's you can contact me on the Neos Official Discord Ra
 Ryuvi for the Initial idea, websocket code and HRV
 <BR>3x1t_5tyl3, Goodvibes and MattyK for being the initial testers of the HRM.
 <BR>Fabien (fg1) for the Initial HRM code I based off (Python Version)
-<BR>ThomFox (fg1) for the Initial Websocket Stuff and HRV Code :D
+<BR>ThomFox for the Initial Websocket Stuff and HRV Code :D
 <BR>Carte Noir for the coffee for keeping me going
 
 # License
