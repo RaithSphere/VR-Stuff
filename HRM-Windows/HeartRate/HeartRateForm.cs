@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -200,7 +201,7 @@ public partial class HeartRateForm : Form
         var data = reading.RRIntervals;
 
         if (data != null)
-        { 
+        {
             while (pos < data.Length)
             {
                 var interval = data[pos] / 1024M;
@@ -216,11 +217,13 @@ public partial class HeartRateForm : Form
 
         if (HRV == null || HRV.Length == 0)
         {
-            WebSocketComponent.SendMessage(hrmData = ($"{bpm,-4:D}.{HeartRateVariance,8:##0.0000}.{BatteryPercent,-4:D}.") + (isConnected ? "1" : "0"));
+            hrmData = FormattableString.Invariant($"{bpm,-4:D}.{HeartRateVariance,8:##0.0000}.{BatteryPercent,-4:D}.") + (isConnected ? "1" : "0");
+            WebSocketComponent.SendMessage(hrmData);
         }
         else
         {
-            WebSocketComponent.SendMessage(hrmData = ($"{bpm,-4:D}.{HeartRateVariance,8:##0.0000}.{BatteryPercent,-4:D}.") + (isConnected ? "1" : "0"));
+            hrmData = FormattableString.Invariant($"{bpm,-4:D}.{HeartRateVariance,8:##0.0000}.{BatteryPercent,-4:D}.") + (isConnected ? "1" : "0");
+            WebSocketComponent.SendMessage(hrmData);
         }
 
         var isDisconnected = bpm == 0 ||
@@ -234,7 +237,7 @@ public partial class HeartRateForm : Form
         }
         else
         {
-            iconText = $"{bpm} beats per min\nHRV: {HeartRateVariance}";
+            iconText = $"{bpm} beats per min\nHRV: {FormattableString.Invariant($"{HeartRateVariance,8:##0.0000}")}";
         }
 
 
