@@ -1,5 +1,7 @@
 # NeosVR Stuff [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
+WINDOWS 11 NOTE - ENABLE ADVANCED MODE ON BLUETOOTH DEVICES DISCOVERY!!!!
+
 `HRM` is a Python script that listens to data from Bluetooth Low Energy (BLE) heart rate sensors<BR>
 `HRM-Windows` is a C# that does the same as the Python version, but works WAYYY better in Windows!<BR>
 `Seperated` is a bunch of seperate files that have been used for various things, see the readme inside that folder for more information
