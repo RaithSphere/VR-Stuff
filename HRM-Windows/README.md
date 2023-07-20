@@ -1,5 +1,7 @@
 # NeosVR Heartrate Monitor Windows Version
 
+<B>WINDOWS 11 NOTE - ENABLE ADVANCED MODE ON BLUETOOTH DEVICES DISCOVERY!!!!</B>
+
 `HRM-Windows` is a C# script that listens to data from Bluetooth Low Energy (BLE) heart rate sensors 
 
 # Supported Devices
