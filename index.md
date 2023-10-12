@@ -1,4 +1,4 @@
-## Welcome to Raith's Repo
+## Welcome to Raith's VR Repo
 
 This is just a collection of scripts that have been opensourced to the VR community by myself
 
