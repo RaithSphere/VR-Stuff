@@ -1,6 +1,6 @@
-# NeosVR Heartrate Monitor [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+# Heartrate Monitor [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-`NeosVR-HRM` is a Python script that listens to data from Bluetooth Low Energy (BLE) heart rate sensors 
+`HRM` is a Python script that listens to data from Bluetooth Low Energy (BLE) heart rate sensors 
 
 # Supported Devices
 `NeosVR-HRM` should support any devices that use the service UUID "180d" and with characteristic "2a37", below is a list of known working devices that have been tested
@@ -50,15 +50,12 @@ Video guide on python setup can be found here https://www.youtube.com/watch?v=aT
 In the config file you need to set port & Bluetooth MAC, 
 <BR>Leave Battery to 1 by default the websocket port is 8123 so you would connect to ws://myip:8123 - E.G ws://localhost:8123
 
-# LogiX
+# In Game Programming
 The data output from the websocket is 4 bytes, 8 bytes, 4 bytes, 1 byte - HR, HRV, BATTERY, CONNECTION STATUS
 Connection Status will return either 0 or 1, 1 being the sensor has a connection to the body.
 
 # Contributions
 If you want to Contribute please feel free to fork this repo
-
-# Support
-If you are having any issue's you can contact me on the Neos Official Discord RaithSphere#2701
 
 # Known Issues
 `bleak.exc.BleakDotNetTaskError: System.Object''DisposedException: The object has been closed. (Exception from HRESULT: 0x80000013)`
@@ -74,4 +71,4 @@ Ryuvi for the Initial idea, websocket code and HRV
 
 # License
 Copyright 2020 RaithSphere.
-[MIT Licensed](https://github.com/RaithSphere/NeosVR-Stuff/blob/main/HRM/LICENSE).
+[MIT Licensed](https://github.com/RaithSphere/VR-Stuff/blob/main/HRM/LICENSE).
