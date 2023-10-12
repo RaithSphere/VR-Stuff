@@ -40,4 +40,4 @@ Ryuvi for the Initial idea, websocket code and HRV
 
 # License
 Copyright 2022 RaithSphere.
-[MIT Licensed](https://github.com/RaithSphere/NeosVR-Stuff/blob/main/HRM/LICENSE).
+[MIT Licensed](https://github.com/RaithSphere/VR-Stuff/blob/main/HRM/LICENSE).
