@@ -3,7 +3,7 @@
 `HRM` is a Python script that listens to data from Bluetooth Low Energy (BLE) heart rate sensors 
 
 # Supported Devices
-`NeosVR-HRM` should support any devices that use the service UUID "180d" and with characteristic "2a37", below is a list of known working devices that have been tested
+`HRM` should support any devices that use the service UUID "180d" and with characteristic "2a37", below is a list of known working devices that have been tested
 <BR><B>Supported OS</B>: Windows and Linux - *(This code has been tested on a Raspberry Pi Zero W and confirmed working with that)*
   
 __Windows is Classified as Experimental due to issues with the way windows handles bluetooth rather poorly, a new way is being researched, please see known issues__
