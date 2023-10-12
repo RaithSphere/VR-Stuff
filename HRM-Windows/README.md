@@ -26,16 +26,12 @@ Megene - H64 | [AliExpress](https://www.aliexpress.com/item/1005001484047949.htm
 <BR>Pair your Heartrate Meter to Windows as you would any normal bluetooth device
 <BR>The websocket port is 8123 so you would connect to ws://myip:8123 - E.G ws://localhost:8123
 
-# LogiX
+# Ingame Programming
 The data output from the websocket is 4 bytes, 8 bytes, 4 bytes, 1 byte - HR, HRV, BATTERY, CONNECTION STATUS
 Connection Status will return either 0 or 1, 1 being the sensor has a connection to the body.
 
 # Contributions
 If you want to Contribute please feel free to fork this repo
-
-# Support
-If you are having any issue's you can contact me on the Neos Official Discord RaithSphere#2701
-
 
 # Thanks and Other Stuff
 Ryuvi for the Initial idea, websocket code and HRV
